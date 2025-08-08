@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HR Policy Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f9fc;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    #chat-box {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      background-color: #fff;
+      height: 400px;
+      overflow-y: scroll;
+      margin-bottom: 1rem;
+    }
+
+    .user-message {
+      font-weight: bold;
+      margin-top: 1rem;
+      color: #0056b3;
+    }
+
+    .bot-response {
+      margin-top: 0.5rem;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #004090;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>HR Policy Assistant</h1>
+
+  <div id="chat-box">
+    <div class="bot-response">👋 Hi! I'm your assistant for HR policies. Ask me anything about leave, benefits, or company rules.</div>
+  </div>
+
+  <input type="text" id="user-input" placeholder="Type your question..." />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    async function sendMessage() {
+      const userInput = document.getElementById("user-input").value;
+      if (!userInput.trim()) return;
+
+      // Add user message to chat
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML += `<div class="user-message">You: ${userInput}</div>`;
+
+      // Send to backend
+      const response = await fetch("/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ question: userInput })  // ✅ Make sure Flask expects 'question'
+      });
+
+      const data = await response.json();
+      chatBox.innerHTML += `<div class="bot-response">Bot: ${data.answer}</div>`;
+      document.getElementById("user-input").value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+
+</body>
+</html>
